@@ -20,3 +20,10 @@ using a Linear Regression model.
 - Model evaluation (MSE, R²)
 
 ## Project Structure
+Salary_Prediction_Using_Linear_Regression/
+├── src/
+│   └── streamlit_app.py   # Main Streamlit application
+├── requirements.txt       # Python dependencies
+├── README.md              # Project documentation
+
+The application is built with Streamlit and deployed on Hugging Face Spaces.
