@@ -1,55 +1,121 @@
-# predict salary based on experience, skills
+# 💼 Salary Prediction using Linear Regression
+# Author: K. Siddhartha
+
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
+
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
-st.set_page_config(page_title="Salary Prediction App", layout="centered")
-
-st.title("💼 Salary Prediction Based on Skills")
-st.write("Predict salary (in thousands) using Linear Regression.")
-
-# skills in coding languages based on percentage
-skills = np.array([[1], [2], [4], [6], [8], [9]])
-
-# salary in thousands
-salary = np.array([10, 20, 40, 60, 80, 90])
-
-# split data into training and testing
-X_train, X_test, y_train, y_test = train_test_split(
-    skills, salary, test_size=0.3, random_state=42
+# --------------------------------------------------
+# Page Config
+# --------------------------------------------------
+st.set_page_config(
+    page_title="Salary Prediction | Linear Regression",
+    layout="centered"
 )
 
-# train the linear regression model
+st.title("💼 Salary Prediction based on Skills")
+st.write(
+    "Interactive Machine Learning app that predicts salary using an "
+    "**Explainable Linear Regression model**."
+)
+
+# --------------------------------------------------
+# Synthetic Dataset (Deterministic)
+# --------------------------------------------------
+np.random.seed(42)
+
+skills = np.array([[1], [2], [4], [6], [8], [9]])
+salary = np.array([10, 20, 40, 60, 80, 90])
+
+# --------------------------------------------------
+# Train/Test Split
+# --------------------------------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    skills,
+    salary,
+    test_size=0.3,
+    random_state=42
+)
+
+# --------------------------------------------------
+# Model Training
+# --------------------------------------------------
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# user input
-skill_input = st.slider("Select your skill level", 1, 10, 3)
+# --------------------------------------------------
+# Evaluation Metrics (TRUE model performance)
+# --------------------------------------------------
+y_pred_test = model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred_test)
+r2 = r2_score(y_test, y_pred_test)
+
+# --------------------------------------------------
+# User Input
+# --------------------------------------------------
+st.subheader("🎯 Predict Salary")
+
+skill_input = st.slider(
+    "Select Experience / Skill Level",
+    min_value=1,
+    max_value=10,
+    value=3
+)
+
 predicted_salary = model.predict([[skill_input]])[0]
 
-st.subheader("📈 Prediction")
-st.success(f"Predicted salary: {predicted_salary:.2f} thousand")
+st.success(f"Predicted Salary: {predicted_salary:.2f} thousand")
 
-# evaluate the model
-y_pred = model.predict(X_test)
-
+# --------------------------------------------------
+# Model Performance
+# --------------------------------------------------
 st.subheader("📊 Model Performance")
-st.write(f"Mean Squared Error: {mean_squared_error(y_test, y_pred):.2f}")
-st.write(f"R² Score: {r2_score(y_test, y_pred):.4f}")
 
-# visualization (no dotted lines)
+col1, col2 = st.columns(2)
+
+col1.metric("Mean Squared Error", f"{mse:.2f}")
+col2.metric("R² Score", f"{r2:.4f}")
+
+# --------------------------------------------------
+# Visualization
+# --------------------------------------------------
+st.subheader("📈 Regression Visualization")
+
 skills_sorted = np.sort(skills, axis=0)
 salary_line = model.predict(skills_sorted)
 
-fig, ax = plt.subplots()
-ax.scatter(skills, salary, color="orange", label="my coding skills")
-ax.plot(skills_sorted, salary_line, color="green", label="predicting the salary")
-ax.set_title("salary based on skills")
-ax.set_xlabel("skills")
-ax.set_ylabel("salary in thousands")
+fig, ax = plt.subplots(figsize=(8,5))
+
+ax.scatter(
+    skills,
+    salary,
+    s=80,
+    label="Training Data"
+)
+
+ax.plot(
+    skills_sorted,
+    salary_line,
+    linewidth=3,
+    label="Regression Line"
+)
+
+ax.set_xlabel("Experience / Skill Level")
+ax.set_ylabel("Salary (in thousands)")
+ax.set_title("Salary Prediction using Linear Regression")
 ax.legend()
 
 st.pyplot(fig)
+
+# --------------------------------------------------
+# Footer
+# --------------------------------------------------
+st.markdown("---")
+st.markdown(
+    "Built with **Python**, **Scikit-learn**, and **Streamlit** by K. Siddhartha"
+)
